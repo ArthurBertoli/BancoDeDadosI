@@ -1,0 +1,54 @@
+--1)Mostre o nome e a função dos mecânicos
+create view nome_funcao (mec_nome, mec_funcao) as
+select nome, funcao from mecanico
+
+select * from nome_funcao
+
+--2)Mostre o modelo e a marca dos veículos dos clientes.
+create view modelo_marca (cliente_marca, cliente_modelo) as
+select marca, modelo from veiculo join cliente using (codc)
+
+select * from modelo_marca
+
+--3)Mostre o nome dos mecânicos, o nome dos clientes, o modelo dos veículos e a data e hora dos consertos realizados.
+create view mecanicos_clientes_veiculos_consertos (mecanico, cliente, modelo, data, hora) as
+select m.nome as mecanico, c.nome as cliente, v.modelo, con.data, con.hora from cliente c 
+join veiculo v using (codc) join conserto con using (codv) join mecanico m using (codm)
+
+select * from mecanicos_clientes_veiculos_consertos
+
+--4)Mostre o ano dos veículos e a média de quilometragem para cada ano.
+create view media_por_ano (ano, media_quilometragem) as
+select ano, avg(quilometragem) as media_quilometragem from veiculo group by ano order by ano 
+
+select * from media_por_ano
+
+--5)Mostre o nome dos mecânicos e o total de consertos feitos por um mecânico em cada dia.
+create view mecanicos_dia (mecanico, data, contagem) as
+select m.nome, con.data, count(*) from mecanico m join conserto con using (codm) group by m.nome, con.data order by con.data
+
+select * from mecanicos_dia
+
+--6)Mostre o nome dos setores e o total de consertos feitos em um setor em cada dia.
+create view setores_dia (setor, data, contagem) as
+select s.nome, con.data, count(*) from setor s join mecanico using (cods) join conserto con using(codm) group by s.nome, con.data order by con.data
+
+select * from setores_dia
+
+--7)Mostre o nome das funções e o número de mecânicos que têm uma destas funções.
+create view nome_funcoes (funcao, contagem) as
+select funcao, count(*) from mecanico group by funcao
+
+select * from nome_funcoes
+
+--8)Mostre o nome dos mecânicos e suas funções e, para os mecânicos que estejam alocados a um setor, informe também o número e nome do setor.
+create view mecanicos_setores(mecanico, funcao, cods, setor) as
+select m.nome, m.funcao, s.cods, s.nome from mecanico m left join setor s using (cods)
+
+select * from mecanicos_setores
+
+--9)Mostre o nome das funções dos mecânicos e a quantidade de consertos feitos agrupado por cada função.
+create view funcao_consertos(funcao, contagem) as
+select m.funcao, count(*) as consertos from mecanico m join conserto c using (codm) join setor s using (cods) group by funcao
+
+select * from funcao_consertos
